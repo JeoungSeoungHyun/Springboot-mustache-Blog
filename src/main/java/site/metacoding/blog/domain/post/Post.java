@@ -31,6 +31,7 @@ public class Post {
     @Column(nullable = false)
     private String content;
 
+    // ORM 설정
     @JoinColumn(name = "userId")
     @ManyToOne
     private User user;
