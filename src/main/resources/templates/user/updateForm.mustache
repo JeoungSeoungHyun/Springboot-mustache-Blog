@@ -1,0 +1,30 @@
+{{>/layout/header}}
+<!-- 컨테이너 시작 -->
+<div class="container mt-3 ">
+
+    <!-- 정보수정 폼 시작 -->
+    <!-- from 태그는 update와 delete 요청을 할 수 없다. 자바스크립트로 처리 -->
+    <form>
+        <div class="mb-3 mt-3">
+            <input type="text" class="form-control" value="ssar" id="username">
+        </div>
+        <div class="mb-3">
+            <input type="password" class="form-control" value="ssar1234" id="password">
+        </div>
+        <div class="mb-3">
+            <input type="email" class="form-control" value="ssar@nate.com" id="email">
+        </div>
+        <button type="button" class="btn btn-cs text-light" onclick="update()">수정완료</button>
+    </form>
+    <!-- 정보수정 폼 끝 -->
+
+    <script>
+        function update() {
+            let usernameDom = document.querySelector("#username");
+            console.log(usernameDom);
+        }
+    </script>
+
+</div>
+<!-- 컨테이너 끝 -->
+{{>/layout/footer}}
