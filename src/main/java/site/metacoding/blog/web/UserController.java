@@ -66,12 +66,17 @@ public class UserController {
     // 로그인 페이지 이동(정적) - 로그인 x
     @GetMapping("/loginForm")
     public String loginForm(HttpServletRequest request, Model model) {
-        Cookie[] cookies = request.getCookies();
-        for (Cookie cookie : cookies) {
-            if (cookie.getName().equals("remember")) {
-                model.addAttribute("remember", cookie.getValue());
+
+        if (request.getCookies() != null) {
+
+            Cookie[] cookies = request.getCookies();
+            for (Cookie cookie : cookies) {
+                if (cookie.getName().equals("remember")) {
+                    model.addAttribute("remember", cookie.getValue());
+                }
             }
         }
+
         return "user/loginForm";
     }
 
@@ -94,8 +99,8 @@ public class UserController {
             // 3. 세션에 담기(키 값 principal 기억!!)
             session.setAttribute("principal", userEntity);
 
-            if (user.getRemember().equals("on")) {
-                response.setHeader("Set-Cookie", "remember=" + user.getUsername());
+            if (user.getRemember() != null && user.getRemember().equals("on")) {
+                response.addHeader("Set-Cookie", "remember=" + user.getUsername());
             }
 
             return "redirect:/";
