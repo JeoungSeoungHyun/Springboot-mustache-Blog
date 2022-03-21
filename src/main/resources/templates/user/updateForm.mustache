@@ -6,13 +6,13 @@
     <!-- from 태그는 update와 delete 요청을 할 수 없다. 자바스크립트로 처리 -->
     <form>
         <div class="mb-3 mt-3">
-            <input type="text" class="form-control" value="ssar" id="username">
+            <input type="text" class="form-control" value="{{principal.username}}" id="username" readonly>
         </div>
         <div class="mb-3">
-            <input type="password" class="form-control" value="ssar1234" id="password">
+            <input type="password" class="form-control" value="{{principal.password}}" id="password" required>
         </div>
         <div class="mb-3">
-            <input type="email" class="form-control" value="ssar@nate.com" id="email">
+            <input type="email" class="form-control" value="{{principal.email}}" id="email" required>
         </div>
         <button type="button" class="btn btn-cs text-light" onclick="update()">수정완료</button>
     </form>

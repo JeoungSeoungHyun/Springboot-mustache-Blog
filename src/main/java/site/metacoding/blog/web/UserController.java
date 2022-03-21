@@ -122,8 +122,9 @@ public class UserController {
     }
 
     // 회원정보 수정 페이지(동적) - 로그인 o
-    @GetMapping("/user/{id}/updateForm")
-    public String updateForm(@PathVariable Integer id) {
+    @GetMapping("/user/updateForm")
+    public String updateForm() {
+        session.getAttribute("principal");
         return "user/updateForm";
     }
 
