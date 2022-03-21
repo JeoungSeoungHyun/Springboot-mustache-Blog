@@ -136,8 +136,9 @@ public class UserController {
 
     // 로그아웃 페이지(정적) - 로그인 o
     // 메인페이지로 redirect 해주어 UX 향상
-    @GetMapping("/user/logout")
+    @GetMapping("/logout")
     public String logout() {
-        return "redirect:/";
+        session.invalidate();
+        return "redirect:/loginForm";
     }
 }
