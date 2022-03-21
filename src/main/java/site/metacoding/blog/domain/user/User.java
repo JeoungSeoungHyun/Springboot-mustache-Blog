@@ -39,7 +39,7 @@ public class User {
     private String password;
 
     // 길이 설정
-    @Column(length = 16000000)
+    @Column(length = 16000000, nullable = false)
     private String email;
 
     @CreatedDate

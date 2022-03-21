@@ -25,26 +25,36 @@ public class UserController {
 
     // 회원가입 페이지 이동(정적) - 로그인 x
     @GetMapping("/joinForm")
-    public String joinForm() {
+    public String joinForm(User user) {
+
         return "user/joinForm";
     }
 
     // 회원가입 - 로그인 x
     // 로그인페이지로 redirect 해주어 UX 향상(로그인페이지 이동 메서드 재활용)
+    // 공백이나 null값이 들어오는 경우의 유효성 검사가 필요
     @PostMapping("/join")
     public String join(User user) {
-        System.out.println("user : " + user);
 
-        // 회원가입 요청 데이터 DB에 insert하기
+        // 1. username, password, eamil의 null과 공백 체크
+        if (user.getUsername() == null || user.getPassword() == null || user.getEmail() == null) {
+            return "redirect:/joinForm";
+        }
+
+        if (user.getUsername().equals("") || user.getPassword().equals("") || user.getEmail().equals("")) {
+            return "redirect:/joinForm";
+        }
+
         // username 중복 확인
         User userEntity = userReposiotory.mCheck(user.getUsername());
 
+        // 2. 핵심로직
         if (userEntity == null) {
             userReposiotory.save(user);
 
             return "redirect:/loginForm";
         } else {
-            System.out.println("같은 아이디가 존재합니다.");
+
             return "redirect:/joinForm";
         }
 
