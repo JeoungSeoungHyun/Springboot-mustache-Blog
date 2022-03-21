@@ -1,5 +1,5 @@
 server:
-  port: 8080
+  port: 8081
   servlet:
     context-path: /
     encoding:
@@ -17,7 +17,7 @@ spring:
       enabled: always
       
   datasource:
-      url: jdbc:mariadb://localhost:3306/greendb
+      url: jdbc:mariadb://localhost:3306/greendb2
       driver-class-name: org.mariadb.jdbc.Driver
       username: green
       password: green1234

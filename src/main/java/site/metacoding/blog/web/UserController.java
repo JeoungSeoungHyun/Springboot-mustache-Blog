@@ -1,27 +1,27 @@
 package site.metacoding.blog.web;
 
-import javax.servlet.http.HttpServletRequest;
+import java.util.Optional;
+
 import javax.servlet.http.HttpSession;
 
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 
+import lombok.RequiredArgsConstructor;
 import site.metacoding.blog.domain.user.User;
 import site.metacoding.blog.domain.user.UserReposiotory;
 
+@RequiredArgsConstructor
 @Controller
 public class UserController {
 
     // 컴포지션
-    private UserReposiotory userReposiotory;
-
-    // 의존성 주입
-    public UserController(UserReposiotory userReposiotory) {
-        this.userReposiotory = userReposiotory;
-    }
+    private final UserReposiotory userReposiotory;
+    private final HttpSession session;
 
     // 회원가입 페이지 이동(정적) - 로그인 x
     @GetMapping("/joinForm")
@@ -36,11 +36,18 @@ public class UserController {
         System.out.println("user : " + user);
 
         // 회원가입 요청 데이터 DB에 insert하기
-        userReposiotory.save(user);
+        // username 중복 확인
+        User userEntity = userReposiotory.mCheck(user.getUsername());
 
-        User userEntity = user;
-        System.out.println("userEntity : " + userEntity);
-        return "redirect:/loginForm";
+        if (userEntity == null) {
+            userReposiotory.save(user);
+
+            return "redirect:/loginForm";
+        } else {
+            System.out.println("같은 아이디가 존재합니다.");
+            return "redirect:/joinForm";
+        }
+
     }
 
     // 로그인 페이지 이동(정적) - 로그인 x
@@ -53,9 +60,7 @@ public class UserController {
     // 개인정보 유출을 막기 위해 Post요청
     // 메인페이지로 redirect 해주어 UX 향상
     @PostMapping("/login")
-    public String login(User user, HttpServletRequest request) {
-
-        HttpSession session = request.getSession();
+    public String login(User user) {
 
         // 1. DB로부터 로그인요청 데이터와 맞은 데이터 가져오기
         User userEntity = userReposiotory.mLogin(user.getUsername(), user.getPassword());
@@ -76,8 +81,34 @@ public class UserController {
 
     // 회원정보 페이지(동적) - 로그인 o
     @GetMapping("/user/{id}")
-    public String detail(@PathVariable Integer id) {
-        return "user/detail";
+    public String detail(@PathVariable Integer id, Model model) {
+
+        // 유효성 검사 (엄청 많지만 인증과 권한만 확인해보도록하자.)
+
+        // 1. 인증체크
+        User principal = (User) session.getAttribute("principal");
+
+        if (principal == null) {
+            return "error/page1";
+        }
+
+        // 2. 권한체크
+        if (principal.getUserId() != id) {
+            return "error/page1";
+        }
+
+        // 3. 핵심로직
+        Optional<User> userOp = userReposiotory.findById(id);
+
+        if (userOp.isPresent()) {
+            User userEntity = userOp.get();
+            model.addAttribute("user", userEntity);
+            return "user/detail";
+        } else {
+            return "error/page1";
+        }
+
+        // DB에 로그 남기기(로그인 한 아이디)
     }
 
     // 회원정보 수정 페이지(동적) - 로그인 o
