@@ -8,6 +8,7 @@ import javax.persistence.EntityListeners;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Transient;
 
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -47,4 +48,7 @@ public class User {
 
     @LastModifiedDate
     private LocalDateTime updateDate;
+
+    @Transient // DB에 컬럼이 생기지 않도록 해준다.
+    private String remember;
 }

@@ -2,6 +2,9 @@ package site.metacoding.blog.web;
 
 import java.util.Optional;
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.stereotype.Controller;
@@ -62,7 +65,13 @@ public class UserController {
 
     // 로그인 페이지 이동(정적) - 로그인 x
     @GetMapping("/loginForm")
-    public String loginForm() {
+    public String loginForm(HttpServletRequest request, Model model) {
+        Cookie[] cookies = request.getCookies();
+        for (Cookie cookie : cookies) {
+            if (cookie.getName().equals("remember")) {
+                model.addAttribute("remember", cookie.getValue());
+            }
+        }
         return "user/loginForm";
     }
 
@@ -70,7 +79,7 @@ public class UserController {
     // 개인정보 유출을 막기 위해 Post요청
     // 메인페이지로 redirect 해주어 UX 향상
     @PostMapping("/login")
-    public String login(User user) {
+    public String login(User user, HttpServletResponse response) {
 
         // 1. DB로부터 로그인요청 데이터와 맞은 데이터 가져오기
         User userEntity = userReposiotory.mLogin(user.getUsername(), user.getPassword());
@@ -84,6 +93,10 @@ public class UserController {
 
             // 3. 세션에 담기(키 값 principal 기억!!)
             session.setAttribute("principal", userEntity);
+
+            if (user.getRemember().equals("on")) {
+                response.setHeader("Set-Cookie", "remember=" + user.getUsername());
+            }
 
             return "redirect:/";
         }
