@@ -108,7 +108,7 @@ public class UserController {
     }
 
     // 회원정보 페이지(동적) - 로그인 o
-    @GetMapping("/user/{id}")
+    @GetMapping("/s/user/{id}")
     public String detail(@PathVariable Integer id, Model model) {
 
         // 유효성 검사 (엄청 많지만 인증과 권한만 확인해보도록하자.)
@@ -140,7 +140,7 @@ public class UserController {
     }
 
     // 회원정보 수정 페이지(동적) - 로그인 o
-    @GetMapping("/user/updateForm")
+    @GetMapping("/s/user/updateForm")
     public String updateForm() {
         session.getAttribute("principal");
         return "user/updateForm";
@@ -148,7 +148,7 @@ public class UserController {
 
     // 회원정보 수정 - 로그인 o
     // 회원정보 페이지로 redirect 해주어 UX 향상
-    @PutMapping("/user/{id}")
+    @PutMapping("/s/user/{id}")
     public String update(@PathVariable Integer id) {
         return "redirect:/user/" + id;
     }
