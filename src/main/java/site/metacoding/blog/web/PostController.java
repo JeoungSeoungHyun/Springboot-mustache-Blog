@@ -4,6 +4,7 @@ import java.util.Optional;
 
 import javax.servlet.http.HttpSession;
 
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -56,7 +57,7 @@ public class PostController {
     // 메인페이지로 사용하기 위해 2개의 주소를 mapping
     @GetMapping({ "/", "/post/list" })
     public String list(Model model) {
-        model.addAttribute("posts", postRepository.findAll());
+        model.addAttribute("posts", postRepository.findAll(Sort.by(Sort.Direction.DESC, "id")));
         return "post/list";
     }
 
