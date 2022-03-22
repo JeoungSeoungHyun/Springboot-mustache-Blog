@@ -70,6 +70,8 @@ public class PostController {
 
             Post postEntity = postOp.get();
             model.addAttribute("post", postEntity);
+            // Lazy전략 사용시 ============== 출력 후 user를 SELECT => 필요시 SELECT
+            System.out.println("=========================");
             return "post/detail";
         } else {
             return "error/page1";
