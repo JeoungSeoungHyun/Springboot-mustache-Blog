@@ -17,7 +17,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import lombok.RequiredArgsConstructor;
 import site.metacoding.blog.domain.user.User;
-import site.metacoding.blog.domain.user.UserReposiotory;
+import site.metacoding.blog.domain.user.UserRepository;
+import site.metacoding.blog.service.UserService;
 import site.metacoding.blog.web.dto.ResponseDto;
 
 @RequiredArgsConstructor
@@ -25,19 +26,14 @@ import site.metacoding.blog.web.dto.ResponseDto;
 public class UserController {
 
     // 컴포지션
-    private final UserReposiotory userReposiotory;
+    private final UserService userService;
     private final HttpSession session;
 
     @GetMapping("/api/user/username/same-check")
     public @ResponseBody ResponseDto<String> sameCheck(String username) {
-        // 1. SELECT * FROM user WHERE username = "ssar";
-        User userEntity = userReposiotory.mCheck(username);
 
-        if (userEntity == null) {
-            return new ResponseDto<String>(1, "통신성공", "없어");
-        } else {
-            return new ResponseDto<String>(1, "통신성공", "있어");
-        }
+        String data = userService.유저네임중복검사(username);
+        return new ResponseDto<String>(1, "통신성공", data);
     }
 
     // 회원가입 페이지 이동(정적) - 로그인 x
@@ -62,18 +58,9 @@ public class UserController {
             return "redirect:/joinForm";
         }
 
-        // username 중복 확인
-        User userEntity = userReposiotory.mCheck(user.getUsername());
+        userService.회원가입(user);
 
-        // 2. 핵심로직
-        if (userEntity == null) {
-            userReposiotory.save(user);
-
-            return "redirect:/loginForm";
-        } else {
-
-            return "redirect:/joinForm";
-        }
+        return "redirect:/loginForm";
 
     }
 
@@ -100,17 +87,9 @@ public class UserController {
     @PostMapping("/login")
     public String login(User user, HttpServletResponse response) {
 
-        // 1. DB로부터 로그인요청 데이터와 맞은 데이터 가져오기
-        User userEntity = userReposiotory.mLogin(user.getUsername(), user.getPassword());
+        User userEntity = userService.로그인(user);
 
-        // 2. 로그인 상태 확인(if문 사용)
-        if (userEntity == null) {
-            System.out.println("아이디 또는 패스워드가 잘못되었습니다.");
-            return "redirect:/loginForm";
-        } else {
-            System.out.println("로그인되었습니다.");
-
-            // 3. 세션에 담기(키 값 principal 기억!!)
+        if (userEntity != null) {
             session.setAttribute("principal", userEntity);
 
             if (user.getRemember() != null && user.getRemember().equals("on")) {
@@ -118,6 +97,8 @@ public class UserController {
             }
 
             return "redirect:/";
+        } else {
+            return "redirect:/loginForm";
         }
     }
 
@@ -139,18 +120,14 @@ public class UserController {
             return "error/page1";
         }
 
-        // 3. 핵심로직
-        Optional<User> userOp = userReposiotory.findById(id);
-
-        if (userOp.isPresent()) {
-            User userEntity = userOp.get();
+        User userEntity = userService.유저정보보기(id);
+        if (userEntity == null) {
+            return "error/page1";
+        } else {
             model.addAttribute("user", userEntity);
             return "user/detail";
-        } else {
-            return "error/page1";
         }
 
-        // DB에 로그 남기기(로그인 한 아이디)
     }
 
     // 회원정보 수정 페이지(동적) - 로그인 o

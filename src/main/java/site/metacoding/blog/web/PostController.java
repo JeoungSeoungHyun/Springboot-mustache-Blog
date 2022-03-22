@@ -19,15 +19,15 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import lombok.RequiredArgsConstructor;
 import site.metacoding.blog.domain.post.Post;
-import site.metacoding.blog.domain.post.PostRepository;
 import site.metacoding.blog.domain.user.User;
+import site.metacoding.blog.service.PostService;
 
 @RequiredArgsConstructor
 @Controller
 public class PostController {
 
     private final HttpSession session;
-    private final PostRepository postRepository;
+    private final PostService postService;
 
     // 글쓰기 페이지 이동(정적) - 인증 o
     @GetMapping("/s/post/writeForm")
@@ -50,9 +50,7 @@ public class PostController {
         }
 
         User principal = (User) session.getAttribute("principal");
-        post.setUser(principal);
-
-        postRepository.save(post);
+        postService.글쓰기(post, principal);
 
         return "redirect:/";
     }
@@ -61,37 +59,27 @@ public class PostController {
     // 메인페이지로 사용하기 위해 2개의 주소를 mapping
     @GetMapping({ "/", "/post/list" })
     public String list(@RequestParam(defaultValue = "0") Integer page, Model model) {
-        model.addAttribute("posts", postRepository.findAll(Sort.by(Sort.Direction.DESC, "id")));
 
-        PageRequest pq = PageRequest.of(page, 3);
-        model.addAttribute("posts", postRepository.findAll(pq));
+        Page<Post> pagePosts = postService.글목록보기(page);
+
+        model.addAttribute("posts", pagePosts);
         model.addAttribute("prevPage", page - 1);
         model.addAttribute("nextPage", page + 1);
 
         return "post/list";
     }
 
-    @GetMapping("/test/post/list")
-    public @ResponseBody Page<Post> testlist(@RequestParam(defaultValue = "0") Integer page) {
-        PageRequest pq = PageRequest.of(page, 3);
-        return postRepository.findAll(pq);
-    }
-
     // 글 상세보기(동적) - 인증 x
     @GetMapping("/post/{id}")
     public String detail(@PathVariable Integer id, Model model) {
 
-        Optional<Post> postOp = postRepository.findById(id);
+        Post postEntity = postService.글상세보기(id);
 
-        if (postOp.isPresent()) {
-
-            Post postEntity = postOp.get();
-            model.addAttribute("post", postEntity);
-            // Lazy전략 사용시 ============== 출력 후 user를 SELECT => 필요시 SELECT
-            System.out.println("=========================");
-            return "post/detail";
-        } else {
+        if (postEntity == null) {
             return "error/page1";
+        } else {
+            model.addAttribute("post", postEntity);
+            return "post/detail";
         }
 
     }
