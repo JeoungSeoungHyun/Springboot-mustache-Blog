@@ -46,7 +46,7 @@ public class Post {
 
     // ORM 설정
     @JoinColumn(name = "userId")
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     private User user;
 
     @CreatedDate

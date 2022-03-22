@@ -4,6 +4,8 @@ import java.util.Optional;
 
 import javax.servlet.http.HttpSession;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -12,6 +14,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import lombok.RequiredArgsConstructor;
 import site.metacoding.blog.domain.post.Post;
@@ -56,9 +60,21 @@ public class PostController {
     // 글 목록 페이지(정적) - 인증 x
     // 메인페이지로 사용하기 위해 2개의 주소를 mapping
     @GetMapping({ "/", "/post/list" })
-    public String list(Model model) {
+    public String list(@RequestParam(defaultValue = "0") Integer page, Model model) {
         model.addAttribute("posts", postRepository.findAll(Sort.by(Sort.Direction.DESC, "id")));
+
+        PageRequest pq = PageRequest.of(page, 3);
+        model.addAttribute("posts", postRepository.findAll(pq));
+        model.addAttribute("prevPage", page - 1);
+        model.addAttribute("nextPage", page + 1);
+
         return "post/list";
+    }
+
+    @GetMapping("/test/post/list")
+    public @ResponseBody Page<Post> testlist(@RequestParam(defaultValue = "0") Integer page) {
+        PageRequest pq = PageRequest.of(page, 3);
+        return postRepository.findAll(pq);
     }
 
     // 글 상세보기(동적) - 인증 x
