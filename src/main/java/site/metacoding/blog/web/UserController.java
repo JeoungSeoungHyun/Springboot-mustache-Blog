@@ -13,10 +13,12 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import lombok.RequiredArgsConstructor;
 import site.metacoding.blog.domain.user.User;
 import site.metacoding.blog.domain.user.UserReposiotory;
+import site.metacoding.blog.web.dto.ResponseDto;
 
 @RequiredArgsConstructor
 @Controller
@@ -25,6 +27,18 @@ public class UserController {
     // 컴포지션
     private final UserReposiotory userReposiotory;
     private final HttpSession session;
+
+    @GetMapping("/api/user/username/same-check")
+    public @ResponseBody ResponseDto<String> sameCheck(String username) {
+        // 1. SELECT * FROM user WHERE username = "ssar";
+        User userEntity = userReposiotory.mCheck(username);
+
+        if (userEntity == null) {
+            return new ResponseDto<String>(1, "통신성공", "없어");
+        } else {
+            return new ResponseDto<String>(1, "통신성공", "있어");
+        }
+    }
 
     // 회원가입 페이지 이동(정적) - 로그인 x
     @GetMapping("/joinForm")
