@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
@@ -98,15 +99,35 @@ public class PostController {
     // 글 수정 페이지 이동(동적) - 인증 o
     // 글 삭제, 글 수정 버튼 만들기
     @GetMapping("/s/post/{id}/updateForm")
-    public String updateForm(@PathVariable Integer id) {
+    public String updateForm(@PathVariable Integer id, Model model) {
+
+        User principal = (User) session.getAttribute("principal");
+
+        // 로그인(인증) 확인
+        if (principal == null) {
+            return "error/page1";
+        }
+
+        Post postEntitiy = postService.글상세보기(id);
+
+        // 글의 권한 확인
+        if (principal.getUserId() != postEntitiy.getUser().getUserId()) {
+            return "error/page1";
+        }
+
+        model.addAttribute("post", postEntitiy);
+
         return "post/updateForm";
     }
 
     // 글 수정(동적) - 인증 o
     // 글 상세보기 페이지로 redirect하여 UX 향상
     @PutMapping("/s/post/{id}")
-    public String update(@PathVariable Integer id) {
-        return "redirect:/post/" + id;
+    public @ResponseBody ResponseDto<String> update(@PathVariable Integer id, @RequestBody Post post) {
+
+        postService.글수정하기(post, id);
+
+        return new ResponseDto<String>(1, "성공", null);
     }
 
     // 글 삭제(동적) - 인증 o
