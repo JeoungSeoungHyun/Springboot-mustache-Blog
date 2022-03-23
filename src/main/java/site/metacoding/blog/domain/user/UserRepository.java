@@ -5,7 +5,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-// repository는 인터페이스로 만들어 콤포지션
+// repository는 인터페이스로 만들어 콤포지션 
 @Repository // 어노테이션이 JpaRepository에 있어 필요없긴 하다.
 public interface UserRepository extends JpaRepository<User, Integer> {
 

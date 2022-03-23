@@ -21,6 +21,7 @@ import lombok.RequiredArgsConstructor;
 import site.metacoding.blog.domain.post.Post;
 import site.metacoding.blog.domain.user.User;
 import site.metacoding.blog.service.PostService;
+import site.metacoding.blog.web.dto.ResponseDto;
 
 @RequiredArgsConstructor
 @Controller
@@ -101,7 +102,24 @@ public class PostController {
     // 글 삭제(동적) - 인증 o
     // 메인페이지로 redirect하여 UX 향상
     @DeleteMapping("/s/post/{id}")
-    public String delete(@PathVariable Integer id) {
-        return "redirect:/";
+    public @ResponseBody ResponseDto<String> delete(@PathVariable Integer id) {
+
+        User principal = (User) session.getAttribute("principal");
+
+        // 로그인(인증) 확인
+        if (principal == null) {
+            return new ResponseDto<String>(-1, "로그인이 되지않았습니다", null);
+        }
+
+        Post postEntitiy = postService.글상세보기(id);
+
+        // 글의 권한 확인
+        if (principal.getUserId() != postEntitiy.getUser().getUserId()) {
+            return new ResponseDto<String>(-1, "해당 글을 삭제할 권한이 없습니다.", null);
+        }
+
+        postService.글삭제하기(id);
+
+        return new ResponseDto<String>(1, "성공", null);
     }
 }

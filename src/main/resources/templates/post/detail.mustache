@@ -4,6 +4,7 @@
 <div class="container mt-3 text-light">
 
     <!-- 상세정보보기 시작 -->
+    <input type="hidden" id="id" value="{{post.id}}">
     <div class="mb-3">
         작성자 : {{post.user.username}}
     </div>
@@ -14,10 +15,37 @@
         <textarea rows="10" class="form-control" readonly>{{post.content}}</textarea>
     </div>
     <a href="/s/post/{{post.id}}/updateForm" class="btn btn-light">수정</a>
+    <button class="btn btn-light" id="btn-delete">삭제</button>
     <!-- 상세정보보기 끝 -->
 
 </div>
 <!-- 컨테이너 끝 -->
+
+<script>
+
+    async function deleteById(){
+        
+        let id = $("#id").val();
+
+        let response = await fetch("/s/post/" + id,{
+            method:"DELETE"
+        });
+
+        let responseObject = await response.json();
+
+        if(responseObject.code == 1){
+            alert("삭제성공");
+            location.href="/";
+        } else{
+            alert("삭제실패");
+            console.log(responseObject.mag);
+        }
+    };
+
+    $("#btn-delete").click((event)=>{
+        deleteById();
+    });
+</script>
 
 {{> /layout/footer}} 
 
