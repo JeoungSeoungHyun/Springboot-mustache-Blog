@@ -74,15 +74,25 @@ public class PostController {
     @GetMapping("/post/{id}")
     public String detail(@PathVariable Integer id, Model model) {
 
+        User principal = (User) session.getAttribute("principal");
+
         Post postEntity = postService.글상세보기(id);
 
         if (postEntity == null) {
             return "error/page1";
-        } else {
-            model.addAttribute("post", postEntity);
-            return "post/detail";
         }
 
+        if (principal != null) {
+            // 권한 확인해서 view로 값을 넘김
+            if (principal.getUserId() == postEntity.getUser().getUserId()) {
+                model.addAttribute("pageOwner", true);
+            } else {
+                model.addAttribute("pageOwner", false);
+            }
+        }
+
+        model.addAttribute("post", postEntity);
+        return "post/detail";
     }
 
     // 글 수정 페이지 이동(동적) - 인증 o
