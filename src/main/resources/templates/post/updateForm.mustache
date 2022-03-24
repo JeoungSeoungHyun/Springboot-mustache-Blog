@@ -9,7 +9,7 @@
         <div class="mb-3 mt-3">
             <input type="text" class="form-control" placeholder="Enter title" id="title" value="{{post.title}}">
         </div>
-        <div class="mb-3">
+        <div class="mb-3 bg-light">
             <textarea id="content" rows="10" class="form-control">{{post.content}}
             </textarea>
         </div>
@@ -19,6 +19,12 @@
 
 </div>
 <!-- 컨테이너 끝 -->
+
+<script>
+    $('#content').summernote({
+        height: 300
+    });
+</script>
 
 <script>
     async function update() {
