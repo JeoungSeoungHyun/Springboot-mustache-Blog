@@ -1,7 +1,5 @@
 package site.metacoding.blog.web;
 
-import java.util.Optional;
-
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -18,7 +16,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import lombok.RequiredArgsConstructor;
 import site.metacoding.blog.domain.user.User;
-import site.metacoding.blog.domain.user.UserRepository;
 import site.metacoding.blog.service.UserService;
 import site.metacoding.blog.web.dto.ResponseDto;
 

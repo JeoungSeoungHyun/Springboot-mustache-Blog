@@ -1,12 +1,8 @@
 package site.metacoding.blog.web;
 
-import java.util.Optional;
-
 import javax.servlet.http.HttpSession;
 
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -91,6 +87,13 @@ public class PostController {
                 model.addAttribute("pageOwner", false);
             }
         }
+
+        // 스크립트 방어(내용에 태그가 있다면 바꿔서 돌려주기)
+        String rawContent = postEntity.getContent();
+        String encContent = rawContent
+                .replaceAll("<script>", "&lt;script&gt;")
+                .replaceAll("</script>", "&lt;/script&gt;");
+        postEntity.setContent(encContent);
 
         model.addAttribute("post", postEntity);
         return "post/detail";
